@@ -1,0 +1,103 @@
+const path = require('path');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const extractCSS = new ExtractTextPlugin('[name].fonts.css');
+const extractSCSS = new ExtractTextPlugin('[name].styles.css');
+
+// Constant with our paths
+const paths = {
+	BUILD: path.resolve(__dirname, 'build'),
+	SRC: path.resolve(__dirname, 'admin/public'),
+	JS: path.resolve(__dirname, 'admin/src'),
+	ADMIN: path.resolve(__dirname, 'admin'),
+};
+// \"npm run build:watch\"
+module.exports = {
+	entry: './admin/index.js',
+	output: { path: __dirname+'/build', filename: 'bundle.js' },
+	module: {
+		rules: [
+			{
+				test: /.(jsx|.js)?$/,
+				loader: 'babel-loader',
+				exclude: /(node_modules|assets|theme|build)/,
+				query: {
+					presets: ['es2015', 'stage-2', 'react', 'env']
+				}
+			},
+			{
+				test: /\.html$/,
+				loader: 'html-loader'
+			},
+			{
+				test: /\.(scss)$/,
+				use: ['css-hot-loader'].concat(extractSCSS.extract({
+					fallback: 'style-loader',
+					use: [
+						{
+							loader: 'css-loader',
+							options: {alias: {'./img': './admin/img'}}
+						},
+						{
+							loader: 'sass-loader'
+						}
+					]
+				}))
+			},
+			{
+				test: /\.css$/,
+				use: extractCSS.extract({
+					fallback: 'style-loader',
+					use: 'css-loader'
+				})
+			},
+			{
+				test: /\.(png|jpg|jpeg|gif|ico)$/,
+				use: [
+					{
+						// loader: 'url-loader'
+						loader: 'file-loader',
+						options: {
+							name: './img/[name].[hash].[ext]'
+						}
+					}
+				]
+			},
+			{
+				test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+				loader: 'file-loader',
+				options: {
+					name: './fonts/[name].[hash].[ext]'
+				}
+			}
+		]
+	},
+	plugins: [
+		new webpack.HotModuleReplacementPlugin(),
+		//new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
+		new webpack.NamedModulesPlugin(),
+		extractCSS,
+		extractSCSS,
+		new HtmlWebpackPlugin( { inject: true, template: './admin/public/index.html' } ),
+		//new CopyWebpackPlugin([ {from: './admin/src/img', to: 'img'} ], {copyUnmodified: false} )
+	],
+	resolve: {
+		extensions: ['.js', '.jsx'],
+		modules: [__dirname , 'node_modules']
+	},
+};
+
+
+
+C:\www\onenapp\node_modules\directory-named-webpack-plugin\index.js:27:25)
+
+var enhancedResolver = require('enhanced-resolve/lib/Resolver');
+
+doApply()
+	if(typeof resolver.ensureHook === "undefined") {
+		var resolver2 = new enhancedResolver();
+		resolver = resolver2;
+	}

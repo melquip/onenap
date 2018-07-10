@@ -2,8 +2,8 @@
 	"presets": [
 		"babel-preset-env",
 		"stage-2",
-		"react"
-		/*, "env"*/
-	]
-	//"plugins": ["transform-object-rest-spread"]
+		"react",
+		"env"
+	],
+	"plugins": ["transform-object-rest-spread"]
 }

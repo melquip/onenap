@@ -14,7 +14,7 @@ const URLS = {
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const DirectoryNamedWebpackPlugin = require("directory-named-webpack-plugin");
+//const DirectoryNamedWebpackPlugin = require("directory-named-webpack-plugin");
 //const CopyWebpackPlugin = require('copy-webpack-plugin'); todo: update to webpackv4
 
 const extractCSS = new ExtractTextPlugin('[name].main.css');
@@ -28,37 +28,31 @@ console.log('ADMIN_DIR', ADMIN_DIR);
 
 module.exports = (env = {}) => {
 	return {
-		mode: 'development',
-		
+		//mode: 'development',
 		entry: path.resolve(BUILD_DIR, 'index.js'),
 		output: {
 			path: BUILD_DIR,
 			filename: 'main.bundle.js',
-			//publicPath: './admin'
+			publicPath: ''
 		},
-		
-		// watch: true,
-		/*
 		devtool: env.prod ? 'source-map' : 'cheap-module-eval-source-map',
 		devServer: {
 			historyApiFallback: true,
 			contentBase: BUILD_DIR,
-			//publicPath: './admin',
+			publicPath: '',
 			port: 3000,
 			compress: true,
 			hot: true,
 			open: true
-		},*/
+		},
 		module: {
 			rules: [
 				{
 					test: /\.(js|jsx|json)$/,
 					exclude: /(node_modules|build|theme)/,
-					
 					use: {
 						loader: 'babel-loader',
 						options: {
-							///cacheDirectory: true,
 							presets: ['react', 'env']
 						}
 					}
@@ -93,7 +87,6 @@ module.exports = (env = {}) => {
 					test: /\.(png|jpg|jpeg|gif|ico)$/,
 					use: [
 						{
-							// loader: 'url-loader'
 							loader: 'file-loader',
 							options: {
 								name: './img/[name].[hash].[ext]'
@@ -120,8 +113,9 @@ module.exports = (env = {}) => {
 			modules: [__dirname, 'node_modules']
 		},
 		plugins: [
-			new DirectoryNamedWebpackPlugin(true),
+			//new DirectoryNamedWebpackPlugin(true),
 			new webpack.HotModuleReplacementPlugin(),
+			new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
 			new webpack.NamedModulesPlugin(),
 			extractCSS,
 			extractSCSS,
@@ -135,9 +129,11 @@ module.exports = (env = {}) => {
 				{copyUnmodified: false}
 			)*/
 		],
+		/*
 		optimization: {
 			//nodeEnv: 'development',
 			minimize: true,
 		}
+		*/
 	}
 };

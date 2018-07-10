@@ -19,7 +19,7 @@ const _fp = require('lodash/fp');
 //const db = require('./config.js');
 
 /* BACKOFFICE RENDERING */
-import React from 'react';
+//import React from 'react';
 //import { renderToString } from 'react-dom/server';
 //import renderFullPage from './renderFullPage';
 
@@ -68,9 +68,9 @@ const compiler = webpack(config);
 
 // Tell express to use the webpack-dev-middleware and use the webpack.config.js
 // configuration file as a base.
-app.use(webpackDevMiddleware(compiler, {
+/*app.use(webpackDevMiddleware(compiler, {
 	publicPath: config.output.publicPath
-}));
+}));*/
 
 
 app.use(express.static(path.resolve(__dirname, '/admin')));

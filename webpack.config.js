@@ -1,45 +1,44 @@
 const path = require('path');
 const URLS = {
-	ENTRY: path.resolve(__dirname, 'build/admin', 'index.js'),
-	OUTPUT: path.resolve(__dirname, 'build/admin'),
+	ENTRY: path.join(__dirname, 'build/admin', 'index.js'),
+	OUTPUT: path.join(__dirname, 'build/admin'),
 	
 	CSS: '[name].main.css',
 	SCSS: '[name].scss.css',
 	JS: 'main.bundle.js',
 	
-	SRC: path.resolve(__dirname, 'admin/public'),
-	//JS: path.resolve(__dirname, 'admin/src'),
-	ADMIN: path.resolve(__dirname, 'admin'),
+	SRC: path.join(__dirname, 'admin/public'),
+	//JS: path.join(__dirname, 'admin/src'),
+	ADMIN: path.join(__dirname, 'admin'),
 };
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-//const DirectoryNamedWebpackPlugin = require("directory-named-webpack-plugin");
-//const CopyWebpackPlugin = require('copy-webpack-plugin'); todo: update to webpackv4
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 
 const extractCSS = new ExtractTextPlugin('[name].main.css');
 const extractSCSS = new ExtractTextPlugin('[name].styles.css');
 
-const BUILD_DIR = path.resolve(__dirname, 'build/admin');
-const ADMIN_DIR = path.resolve(__dirname, 'admin');
+const BUILD_DIR = path.join(__dirname, 'build/admin');
+const ADMIN_DIR = path.join(__dirname, 'admin');
 
 console.log('BUILD_DIR', BUILD_DIR);
 console.log('ADMIN_DIR', ADMIN_DIR);
 
 module.exports = (env = {}) => {
 	return {
-		//mode: 'development',
-		entry: path.resolve(BUILD_DIR, 'index.js'),
+		entry: 'admin/index.js',
 		output: {
 			path: BUILD_DIR,
 			filename: 'main.bundle.js',
-			publicPath: ''
+			//publicPath: ''
 		},
 		devtool: env.prod ? 'source-map' : 'cheap-module-eval-source-map',
 		devServer: {
 			historyApiFallback: true,
 			contentBase: BUILD_DIR,
-			publicPath: '',
+			//publicPath: '',
 			port: 3000,
 			compress: true,
 			hot: true,
@@ -48,13 +47,20 @@ module.exports = (env = {}) => {
 		module: {
 			rules: [
 				{
-					test: /\.(js|jsx|json)$/,
+					test: /\.(js|jsx)$/,
 					exclude: /(node_modules|build|theme)/,
 					use: {
 						loader: 'babel-loader',
 						options: {
 							presets: ['react', 'env']
 						}
+					}
+				},
+				{
+					test: /\.(json)$/,
+					exclude: /(node_modules|build|theme)/,
+					use: {
+						loader: 'json-loader',
 					}
 				},
 				{
@@ -103,37 +109,23 @@ module.exports = (env = {}) => {
 				}
 			]
 		},
-		//target: 'node',
-		resolve: {
-			extensions: ['.js', '.jsx', '.json'],
-			/*plugins: [
-				new DirectoryNamedWebpackPlugin()
-			],*/
-			//aliasFields: ['main', 'browser', 'module'],
-			modules: [__dirname, 'node_modules']
-		},
 		plugins: [
-			//new DirectoryNamedWebpackPlugin(true),
 			new webpack.HotModuleReplacementPlugin(),
 			new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
 			new webpack.NamedModulesPlugin(),
 			extractCSS,
 			extractSCSS,
-			new HtmlWebpackPlugin({
-				inject: true,
-				template: './admin/public/index.html'
-			})/*,
-			new CopyWebpackPlugin([
-					{from: './admin/public/assets/img', to: 'assets/img'}
-				],
-				{copyUnmodified: false}
-			)*/
+			new HtmlWebpackPlugin({ inject: true, template: './admin/public/index.html' }),
+			new CopyWebpackPlugin([{from: './admin/public/assets/img', to: 'assets/img'}], {copyUnmodified: false})
 		],
-		/*
-		optimization: {
-			//nodeEnv: 'development',
-			minimize: true,
-		}
-		*/
+		/*target: 'node',
+		node: {
+			console: true,
+		},*/
+		resolve: {
+			extensions: ['.js', '.jsx'],
+			modules: [__dirname, 'node_modules']
+		},
+		//externals: [nodeExternals()]
 	}
 };

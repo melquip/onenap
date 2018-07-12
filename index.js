@@ -60,11 +60,12 @@ app.set('view engine', 'pug');
 
 
 /* ROUTING */
-
+/*
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const config = require('./webpack.config.js')();
 const compiler = webpack(config);
+*/
 
 // Tell express to use the webpack-dev-middleware and use the webpack.config.js
 // configuration file as a base.
@@ -72,22 +73,46 @@ const compiler = webpack(config);
 	publicPath: config.output.publicPath
 }));*/
 
-
-app.use(express.static(path.resolve(__dirname, '/admin')));
+console.log('__dirname:', __dirname);
+app.use(express.static(path.join(__dirname, 'admin')));
 
 const apiRouter = express.Router();
 apiRouter.get('/admin', (req, res) => {
 	console.log("\napiRouter:", process.cwd(), req.url, path.resolve(__dirname, 'admin/index.html'));
-	res.sendFile(process.cwd() + '/admin/src/_nav');
+	res.sendFile(path.join(process.cwd(), '/admin/src/_nav'));
 });
-
 app.use('/admin', apiRouter);
 
-app.get('/admin', (req, res) => {
-	res.sendFile(path.resolve(__dirname, 'admin/index.html')); //
+app.get('*', (req, res) => {
+	console.log(path.join(__dirname, req.url) , __dirname, req.url);
+	if(req.url == '/admin/') {
+		res.sendFile(path.join(__dirname, 'admin/index.html'));
+	} else {
+		res.sendFile(path.join(__dirname, req.url));
+	}
 });
 
-
+function template(state, styles, breadcrumb) {
+	return `<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge">
+			<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+			<meta name="description" content="CoreUI for React - Open Source Bootstrap Admin Template">
+			<meta name="author" content="Łukasz Holeczek">
+			<meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,CSS,SCSS,HTML,RWD,Dashboard,React">
+			<title>CoreUI for React</title>
+		</head>
+		<body>
+			<noscript>
+				You need to enable JavaScript to run this app.
+			</noscript>
+			<div id="root"></div>
+		</body>
+	</html>
+	`;
+}
 /*
 app.get('*', (req, res) => {
 	log("\nstatic", path.resolve(__dirname),
